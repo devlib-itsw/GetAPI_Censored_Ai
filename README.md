@@ -32,63 +32,75 @@ GetAPI 플랫폼에서 사용하는 한국어 혐오표현 감지 AI 서버입�
 ## 요구사항
 
 - Python 3.10 이상
-- 모델 파일 (`./model/` 디렉터리, 아래 참고)
-
-```
-model/
-├── config.json
-├── model.safetensors
-├── tokenizer.json
-├── tokenizer_config.json
-├── special_tokens_map.json
-└── vocab.txt
-```
-
-> **모델 파일은 용량 문제로 레포에 포함되어 있지 않습니다.**  
-> 아래 [모델 다운로드](#모델-다운로드) 섹션을 참고하세요.
+- git-lfs (모델 파일 다운로드에 필요)
 
 ---
 
-## 설치
+## 설치 및 실행
+
+### 1. git-lfs 설치
+
+모델 파일(`model.safetensors`, 416MB)이 Git LFS로 관리됩니다.  
+클론 전에 반드시 git-lfs를 먼저 설치해야 합니다.
 
 ```bash
-# 1. 레포 클론
+# Ubuntu / Debian
+sudo apt install git-lfs
+
+# macOS
+brew install git-lfs
+
+# Arch Linux
+sudo pacman -S git-lfs
+```
+
+### 2. 레포 클론
+
+```bash
+git lfs install
 git clone https://github.com/devlib-itsw/GetAPI_Censored_Ai.git
 cd GetAPI_Censored_Ai
+```
 
-# 2. 가상환경 생성 및 활성화
+> git-lfs가 설치된 상태에서 클론하면 모델 파일까지 자동으로 다운로드됩니다.  
+> 이미 클론한 경우 `git lfs pull`을 실행하면 모델 파일을 받을 수 있습니다.
+
+### 3. 가상환경 생성 및 의존성 설치
+
+```bash
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
-
-# 3. 의존성 설치
-pip install fastapi uvicorn transformers torch
+pip install -r requirements.txt
 ```
 
----
-
-## 모델 다운로드
-
-`learn.py`를 실행하면 Hugging Face에서 모델을 자동으로 내려받아 `./model_files/`에 저장합니다.
-
-```bash
-python learn.py
-```
-
-저장 완료 후 폴더명을 `model`로 변경하세요.
-
-```bash
-mv model_files model
-```
-
----
-
-## 실행
+### 4. 실행
 
 ```bash
 python main.py
 ```
 
 서버가 `http://127.0.0.1:8888`에서 시작됩니다.
+
+---
+
+## 디렉터리 구조
+
+```
+.
+├── main.py                      # FastAPI 서버 메인
+├── learn.py                     # 모델 다운로드 스크립트
+├── speed_test.py                # 추론 속도 테스트
+├── requirements.txt             # 의존성 목록
+├── model/                       # BERT 모델 파일 (Git LFS)
+│   ├── config.json
+│   ├── model.safetensors        # 416MB — Git LFS로 관리
+│   ├── tokenizer.json
+│   ├── tokenizer_config.json
+│   ├── special_tokens_map.json
+│   └── vocab.txt
+└── logs/                        # 실행 시 자동 생성
+    └── YYYYMMDD.log
+```
 
 ---
 
